@@ -18,6 +18,7 @@ The script accepts buildout command-line options, so you can
 use the -c option to specify an alternate configuration file.
 """
 
+
 import os
 import shutil
 import sys
@@ -73,7 +74,7 @@ parser.add_option("--setuptools-to-dir",
 
 options, args = parser.parse_args()
 if options.version:
-    print("bootstrap.py version %s" % __version__)
+    print(f"bootstrap.py version {__version__}")
     sys.exit(0)
 
 
@@ -158,11 +159,10 @@ if version is None and not options.accept_buildout_test_releases:
         try:
             return not parsed_version.is_prerelease
         except AttributeError:
-            # Older setuptools
-            for part in parsed_version:
-                if (part[:1] == '*') and (part not in _final_parts):
-                    return False
-            return True
+            return not any(
+                (part[:1] == '*') and (part not in _final_parts)
+                for part in parsed_version
+            )
 
     index = setuptools.package_index.PackageIndex(
         search_path=[setuptools_path])
